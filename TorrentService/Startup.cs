@@ -1,18 +1,14 @@
-using CK.AspNet.Auth;
 using CK.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
 using System;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Hosting;
 using CK.StObj;
 using CK.Auth;
 
-namespace Automelec.Portal
+namespace TorrentService
 {
 	public class Startup
 	{
