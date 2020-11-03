@@ -1,17 +1,21 @@
-import type { AuthService } from "@signature/webfrontauth";
-
+import { AuthService, IUserInfo } from "@signature/webfrontauth";
+import type { AxiosInstance } from "axios";
+import { readable } from "svelte/store";
 export const authServicekey = {};
-
-let instance: AuthService | undefined;
-let promise: Promise<AuthService> | undefined;
-
-export async function initialize(): Promise<AuthService> {
-    if (instance !== undefined) return instance;
-    if (promise !== undefined) return promise;
-    promise = initializeInternal();
-    return promise;
-}
-
-async function initializeInternal(): Promise<AuthService> {
-
+export function createAuthService(axios: AxiosInstance) {
+    let authService = new AuthService({ //TODO: put this in a config.
+        identityEndPoint: {
+            disableSsl: true,
+            hostname: 'localhost',
+            port: 5000
+        }
+    }, axios);
+    authService.refresh(true, true, true);
+    return readable(authService, (set) => {
+        const updater = (eventSource: AuthService<IUserInfo>) => set(eventSource);
+        authService.addOnChange(updater);
+        return () => {
+            authService.removeOnChange(updater);
+        }
+    });
 }

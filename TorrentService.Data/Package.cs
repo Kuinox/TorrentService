@@ -1,6 +1,6 @@
 using CK.Core;
 
-namespace Automelec.Data
+namespace TorrentService.Data
 {
     [SqlPackage(
         ResourcePath = "Res",
@@ -10,5 +10,9 @@ namespace Automelec.Data
         Versions( "1.0.0" )]
     public abstract class Package : SqlPackage
     {
+        void StObjConstruct( CK.DB.User.UserPassword.Package userPwd )
+        {
+
+        }
     }
 }

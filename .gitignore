@@ -243,3 +243,4 @@ CodeCakeBuilder/MemoryKey.*.txt
 CodeCakeBuilder/UnitTestsDone.*.txt
 /CKSetup/WorkingDir/
 CK.StObj.AutoAssembly.*
+/TorrentService/Logs/

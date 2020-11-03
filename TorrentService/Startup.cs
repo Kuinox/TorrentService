@@ -7,52 +7,62 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using CK.StObj;
 using CK.Auth;
+using CK.AspNet.Auth;
+using System.Collections.Generic;
 
 namespace TorrentService
 {
-	public class Startup
-	{
-		readonly IActivityMonitor _startupMonitor;
-		readonly IWebHostEnvironment _hostingEnvironment;
+    public class Startup
+    {
+        readonly IActivityMonitor _startupMonitor;
+        readonly IWebHostEnvironment _hostingEnvironment;
 
-		public IConfiguration Configuration { get; }
-		public Startup(IConfiguration configuration, IWebHostEnvironment env)
-		{
-			_startupMonitor = new ActivityMonitor($"App {env.ApplicationName}/{env.EnvironmentName} on {Environment.MachineName}/{Environment.UserName}.");
-			Configuration = configuration;
-			_hostingEnvironment = env;
-		}
+        public IConfiguration Configuration { get; }
+        public Startup( IConfiguration configuration, IWebHostEnvironment env )
+        {
+            _startupMonitor = new ActivityMonitor( $"App {env.ApplicationName}/{env.EnvironmentName} on {Environment.MachineName}/{Environment.UserName}." );
+            Configuration = configuration;
+            _hostingEnvironment = env;
+        }
 
-		// This method gets called by the runtime. Use this method to add services to the container.
-		public void ConfigureServices(IServiceCollection services)
-		{
-			services.AddOptions();
+        public void ConfigureServices( IServiceCollection services )
+        {
+            services.AddOptions();
 
-			string connectionString = Configuration["ConnectionString"];
-			services.AddCKDatabase(_startupMonitor, typeof(GeneratedRootContext).Assembly, connectionString)
-				.AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-				.AddSingleton<IAuthenticationTypeSystem, StdAuthenticationTypeSystem>()
-				.AddAuthentication()
-				.AddWebFrontAuth();
-			services.AddMvc();
-		}
+            string connectionString = Configuration["ConnectionString"];
+            services.AddCKDatabase( _startupMonitor, typeof( GeneratedRootContext ).Assembly, connectionString )
+                .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
+                .AddSingleton<IAuthenticationTypeSystem, StdAuthenticationTypeSystem>();
+            services.AddControllers();
+            services.AddAuthentication( WebFrontAuthOptions.OnlyAuthenticationScheme )
+                 .AddWebFrontAuth( options =>
+                 {
+                     options.ExpireTimeSpan = TimeSpan.FromHours( 1 );
+                     options.SlidingExpirationTime = TimeSpan.FromHours( 1 );
+                     options.SchemesCriticalTimeSpan = new Dictionary<string, TimeSpan>();
+                     options.SchemesCriticalTimeSpan.Add( "Basic", new TimeSpan( 0, 5, 0 ) );
+                 } );
+            services.AddCors();
+            services.AddMvc( s => s.EnableEndpointRouting = false );
+            services.AddAuthorization();
+        }
 
-		public void Configure(IApplicationBuilder app)
-		{
-			app.UseCors(c =>
-				c.WithOrigins("http://localhost:8080")
-				.AllowCredentials()
-				.AllowAnyMethod()
-				.AllowAnyHeader()
-			  );
-			app.UseAuthentication();
+        public void Configure( IApplicationBuilder app )
+        {
+            app.UseCors( c =>
+                 c.WithOrigins( "http://localhost:8080" )
+                 .AllowCredentials()
+                 .AllowAnyMethod()
+                 .AllowAnyHeader()
+              );
 
-			app.UseRouting();
-			app.UseExceptionHandler("/Home/Error");
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
-			app.UseStaticFiles();
-			app.UseFileServer();
-			app.UseMvc();
-		}
-	}
+            app.UseAuthentication();
+
+            app.UseFileServer();
+            app.UseMvc();
+        }
+    }
 }

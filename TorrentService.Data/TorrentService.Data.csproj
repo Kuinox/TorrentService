@@ -1,14 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\Common\Shared.props" />
 
-	<PropertyGroup>
-		<TargetFramework>netcoreapp3.1</TargetFramework>
-	</PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="CK.DB.Acl" Version="9.0.1" />
-		<PackageReference Include="CK.DB.User.UserPassword" Version="9.0.1" />
-		<PackageReference Include="CK.SqlServer.Dapper" Version="0.11.0" />
-		<PackageReference Include="CK.SqlServer.Setup.Model" Version="14.0.1" />
-	</ItemGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="CK.DB.Acl" Version="9.0.1" />
+    <PackageReference Include="CK.DB.Auth" Version="9.0.1" />
+    <PackageReference Include="CK.DB.AspNet.Auth" Version="10.1.0" />
+    <PackageReference Include="CK.DB.User.UserPassword" Version="9.0.1" />
+    <PackageReference Include="CK.SqlServer.Dapper" Version="0.11.0" />
+    <PackageReference Include="CK.SqlServer.Setup.Model" Version="14.0.1" />
+    <PackageReference Include="CK.SqlServer.Transaction" Version="0.13.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="**\*.sql" />
+    <EmbeddedResource Include="**\*.tql" />
+  </ItemGroup>
 
 </Project>

@@ -18,8 +18,8 @@ namespace TorrentService
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
 					webBuilder
-						.UseUrls("http://*:5000")
-						.UseScopedHttpContext()
+                        .UseKestrel()
+                        .UseScopedHttpContext()
 						.UseStartup<Startup>();
 				})
 				.ConfigureAppConfiguration((context, configuration) =>
